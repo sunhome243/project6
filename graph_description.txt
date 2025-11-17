@@ -1,0 +1,8 @@
+R:V
+S:R
+T:S,U,W
+U:Y
+V:S
+W:X
+X:U
+Y:W
