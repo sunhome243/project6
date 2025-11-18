@@ -7,7 +7,7 @@
 
 #include <fstream>
 #include <sstream>
-#include "../submissions/solution/graph.cpp"
+#include "graph.cpp"
 
 Graph<string, string> *generate_graph(string fname)
 {

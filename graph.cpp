@@ -12,11 +12,21 @@ Graph<D, K>::Graph()
 template <typename D, typename K>
 Graph<D, K>::Graph(vector<K> keys, vector<D> data, vector<vector<K>> edges)
 {
+    for (int i = 0; i < keys.size(); i++) {
+        vertices[keys[i]] = new Vertex<D, K>(keys[i], data[i]);
+    }
+    
+    for (int i = 0; i < keys.size(); i++) {
+        vertices[keys[i]]->adj = edges[i];
+    }
 }
 
 template <typename D, typename K>
 Graph<D, K>::~Graph()
 {
+    for (auto& pair : vertices) {
+        delete pair.second;
+    }
 }
 /*
 G.get(k) should return a pointer to the vertex corresponding to the key k in the graph G
@@ -40,7 +50,7 @@ template <typename D, typename K>
 bool Graph<D, K>::reachable(K u, K v)
 {
     bfs(u);
-    Vertex<D, K> target = get(v);
+    Vertex<D, K>* target = get(v);
     if (target != nullptr && target->distance != -1)
     {
         return true;
@@ -70,40 +80,116 @@ void Graph<D, K>::bfs(K s)
 
     while (!q.empty())
     {
-        K *u_key = q.front();
+        K u_key = q.front();
         q.pop();
         Vertex<D, K> *u = get(u_key);
+        if (u == nullptr) continue; 
         for (auto v_key : u->adj)
         {
             Vertex<D, K> *v = get(v_key);
+            if (v == nullptr) continue;
             if (v->color == "white")
             {
-                v->color == "gray";
-                v->distance = u.distnace + 1;
+                v->color = "gray";
+                v->distance = u->distance + 1;
                 v->pi = u_key;
-                q.push(v_key)
+                q.push(v_key);
             }
-            u.color = "black"
+            
         }
+        u->color = "black";
     }
 }
 
 template <typename D, typename K>
 void Graph<D, K>::print_path(K u, K v)
 {
+    bfs(u);
+    
+    Vertex<D, K>* target = get(v);
+    if (target == nullptr || target->distance == -1) {
+        return;
+    }
+    
+    vector<K> path;
+    K current = v;
+    
+    while (current != u) {
+        path.push_back(current);
+        Vertex<D, K>* curr_vertex = get(current);
+        if (curr_vertex == nullptr) break;
+        current = curr_vertex->pi;
+    }
+    path.push_back(u);
+    
+    for (int i = path.size() - 1; i >= 0; i--) {
+        cout << path[i];
+        if (i > 0) cout << " -> ";
+    }
 }
+
 
 template <typename D, typename K>
 string Graph<D, K>::edge_class(K u, K v)
 {
-
-    return "";
+    Vertex<D, K>* u_vertex = get(u);
+    if (u_vertex == nullptr) return "no edge";
+    
+    bool edge_exists = false;
+    for (K adj_key : u_vertex->adj) {
+        if (adj_key == v) {
+            edge_exists = true;
+            break;
+        }
+    }
+    if (!edge_exists) return "no edge";
+    
+    Vertex<D, K>* v_vertex = get(v);
+    if (v_vertex == nullptr || v_vertex->distance == -1) {
+        return "no edge";
+    }
+    
+    if (v_vertex->pi == u) {
+        return "tree edge";
+    }
+    else if (v_vertex->distance < u_vertex->distance) {
+        return "back edge";
+    }
+    else if (v_vertex->distance > u_vertex->distance) {
+        return "forward edge";
+    }
+    else {
+        return "cross edge";
+    }
 }
+
+
+
 
 template <typename D, typename K>
 void Graph<D, K>::bfs_tree(K s)
 {
+    bfs(s);
+    
+    map<int, vector<K>> levels;
+    for (auto& pair : vertices) {
+        Vertex<D, K>* vertex = pair.second;
+        if (vertex->distance != -1) {
+            levels[vertex->distance].push_back(vertex->key);
+        }
+    }
+    
+    for (auto& level_pair : levels) {
+        vector<K>& level_vertices = level_pair.second;
+        sort(level_vertices.begin(), level_vertices.end()); // Sort for consistent order
+        for (int i = 0; i < level_vertices.size(); i++) {
+            cout << level_vertices[i];
+            if (i < level_vertices.size() - 1) cout << " ";
+        }
+        cout << endl;
+    }
 }
+
 
 // ========================================
 // Helper Methods
@@ -112,10 +198,10 @@ void Graph<D, K>::bfs_tree(K s)
 template <typename D, typename K>
 void Graph<D, K>::reset_bfs_state()
 {
-    for (&auto pair : vertices)
+    for (auto& pair : vertices)
     {
         pair.second->color = "white";
-        pair.second->pi = nullptr;
+        pair.second->pi = K();
         pair.second->distance = -1;
     }
 }

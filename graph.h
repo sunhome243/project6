@@ -34,7 +34,7 @@ class Graph
 {
 public:
     // Public members (as per test requirements)
-    map<K, Vertex<D, K> * vertices>; // V - vertices stored in a map for O(log n) access
+    map<K, Vertex<D, K> *> vertices; // V - vertices stored in a map for O(log n) access
 
     // Constructors
     Graph();
