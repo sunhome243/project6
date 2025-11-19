@@ -168,53 +168,60 @@ string Graph<D, K>::edge_class(K u, K v)
     }
 }
 
-
 template <typename D, typename K>
 void Graph<D, K>::bfs_tree(K s)
 {
     bfs(s);
     
-    // Build level structure preserving BFS discovery order
-    vector<pair<int, K>> ordered_vertices;
-    
-    // Traverse in the order BFS discovered them
+    // Capture BFS discovery order
+    vector<K> discovery_order;
     queue<K> q;
-    map<K, bool> added;
+    map<K, bool> visited;
     
     q.push(s);
-    added[s] = true;
+    visited[s] = true;
     
     while (!q.empty()) {
-        K curr_key = q.front();
+        K curr = q.front();
         q.pop();
+        discovery_order.push_back(curr);
         
-        Vertex<D, K>* curr = get(curr_key);
-        if (curr != nullptr && curr->distance != -1) {
-            ordered_vertices.push_back({curr->distance, curr_key});
-            
-            // Add neighbors in adjacency list order
-            for (K neighbor : curr->adj) {
+        Vertex<D, K>* vertex = get(curr);
+        if (vertex != nullptr) {
+            for (K neighbor : vertex->adj) {
                 Vertex<D, K>* nbr = get(neighbor);
-                if (nbr != nullptr && nbr->distance != -1 && !added[neighbor]) {
-                    added[neighbor] = true;
+                if (nbr != nullptr && nbr->distance != -1 && !visited[neighbor]) {
+                    visited[neighbor] = true;
                     q.push(neighbor);
                 }
             }
         }
     }
     
-    // Print by level in discovery order
-    int current_level = -1;
-    for (int i = 0; i < ordered_vertices.size(); i++) {
-        int level = ordered_vertices[i].first;
-        K key = ordered_vertices[i].second;
+    // Group by levels in discovery order
+    map<int, vector<K>> levels;
+    for (K key : discovery_order) {
+        Vertex<D, K>* vertex = get(key);
+        if (vertex != nullptr && vertex->distance != -1) {
+            levels[vertex->distance].push_back(key);
+        }
+    }
+    
+    // Print levels
+    int total_levels = levels.size();
+    int current_level_index = 0;
+    
+    for (auto& level_pair : levels) {
+        vector<K>& level_vertices = level_pair.second;
         
-        if (level != current_level) {
-            if (current_level != -1) cout << endl;
-            current_level = level;
-            cout << key;
-        } else {
-            cout << " " << key;
+        for (int i = 0; i < level_vertices.size(); i++) {
+            cout << level_vertices[i];
+            if (i < level_vertices.size() - 1) cout << " ";
+        }
+        
+        current_level_index++;
+        if (current_level_index < total_levels) {
+            cout << endl;
         }
     }
 }
