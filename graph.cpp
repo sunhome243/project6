@@ -135,6 +135,7 @@ string Graph<D, K>::edge_class(K u, K v)
     Vertex<D, K>* u_vertex = get(u);
     if (u_vertex == nullptr) return "no edge";
     
+    // Check if edge (u, v) exists
     bool edge_exists = false;
     for (K adj_key : u_vertex->adj) {
         if (adj_key == v) {
@@ -149,21 +150,23 @@ string Graph<D, K>::edge_class(K u, K v)
         return "no edge";
     }
     
+    // Tree edge: v's parent is u in BFS tree
     if (v_vertex->pi == u) {
         return "tree edge";
     }
+    // Back edge: edge to ancestor (v was discovered before u)
     else if (v_vertex->distance < u_vertex->distance) {
         return "back edge";
     }
+    // Forward edge: edge to descendant (v discovered after u, but not direct child)
     else if (v_vertex->distance > u_vertex->distance) {
         return "forward edge";
     }
+    // Cross edge: same level or other relationships
     else {
         return "cross edge";
     }
 }
-
-
 
 
 template <typename D, typename K>
@@ -171,25 +174,50 @@ void Graph<D, K>::bfs_tree(K s)
 {
     bfs(s);
     
-    map<int, vector<K>> levels;
-    for (auto& pair : vertices) {
-        Vertex<D, K>* vertex = pair.second;
-        if (vertex->distance != -1) {
-            levels[vertex->distance].push_back(vertex->key);
+    // Build level structure preserving BFS discovery order
+    vector<pair<int, K>> ordered_vertices;
+    
+    // Traverse in the order BFS discovered them
+    queue<K> q;
+    map<K, bool> added;
+    
+    q.push(s);
+    added[s] = true;
+    
+    while (!q.empty()) {
+        K curr_key = q.front();
+        q.pop();
+        
+        Vertex<D, K>* curr = get(curr_key);
+        if (curr != nullptr && curr->distance != -1) {
+            ordered_vertices.push_back({curr->distance, curr_key});
+            
+            // Add neighbors in adjacency list order
+            for (K neighbor : curr->adj) {
+                Vertex<D, K>* nbr = get(neighbor);
+                if (nbr != nullptr && nbr->distance != -1 && !added[neighbor]) {
+                    added[neighbor] = true;
+                    q.push(neighbor);
+                }
+            }
         }
     }
     
-    for (auto& level_pair : levels) {
-        vector<K>& level_vertices = level_pair.second;
-        sort(level_vertices.begin(), level_vertices.end()); // Sort for consistent order
-        for (int i = 0; i < level_vertices.size(); i++) {
-            cout << level_vertices[i];
-            if (i < level_vertices.size() - 1) cout << " ";
+    // Print by level in discovery order
+    int current_level = -1;
+    for (int i = 0; i < ordered_vertices.size(); i++) {
+        int level = ordered_vertices[i].first;
+        K key = ordered_vertices[i].second;
+        
+        if (level != current_level) {
+            if (current_level != -1) cout << endl;
+            current_level = level;
+            cout << key;
+        } else {
+            cout << " " << key;
         }
-        cout << endl;
     }
 }
-
 
 // ========================================
 // Helper Methods
