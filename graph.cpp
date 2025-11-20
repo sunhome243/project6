@@ -305,11 +305,6 @@ void Graph<D, K>::dfs(K source)
     reset_dfs_state();
     int time = 0;
 
-    Vertex<D, K>* start_node = get(source);
-    if (start_node != nullptr) {
-        dfs_visit(source, time);
-    }
-
     // Visit ALL vertices, creating a forest if needed
     for (auto& pair : vertices) {
         K vertex_key = pair.first;
