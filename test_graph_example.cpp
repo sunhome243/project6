@@ -153,7 +153,7 @@ void test_edge_class(Graph<string, string> *G)
         e_class = G->edge_class("T", "S"); // cross edge
         if (e_class != "cross edge")
         {
-            cout << "Misidentified forward edge (\"T\", \"S\") as : " << e_class << endl;
+            cout << "Misidentified cross edge (\"T\", \"S\") as : " << e_class << endl;
         }
     }
     catch (exception &e)

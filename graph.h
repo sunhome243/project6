@@ -23,10 +23,15 @@ struct Vertex
     int distance; // Distance from source (-1 represents infinity)
     K pi;         // Predecessor key
 
+    // DFS properties
+    int discovery_time;  
+    int finish_time;
     // Constructor
-    Vertex(K k, D d) : key(k), data(d), color("white"), distance(-1) {}
-    Vertex() : color("white"), distance(-1) {}
+    Vertex(K k, D d) : key(k), data(d), color("white"), distance(-1), 
+                       discovery_time(-1), finish_time(-1) {}
+    Vertex() : color("white"), distance(-1), discovery_time(-1), finish_time(-1) {}
 };
+
 
 // Graph class template: <DataType, KeyType>
 template <typename D, typename K>
@@ -49,11 +54,15 @@ public:
     void bfs(K s);
     void print_path(K u, K v);
     string edge_class(K u, K v);
+    void dfs(K source);
+    void dfs_visit(K u_key, int &time);
+    void reset_dfs_state();
     void bfs_tree(K s);
-
+    K find_source();
 private:
     // Helper methods
     void reset_bfs_state();
+    
 };
 
 #endif // GRAPH_H

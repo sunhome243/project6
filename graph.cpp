@@ -12,13 +12,10 @@ Graph<D, K>::Graph()
 template <typename D, typename K>
 Graph<D, K>::Graph(vector<K> keys, vector<D> data, vector<vector<K>> edges)
 {
-    for (int i = 0; i < keys.size(); i++) {
-        vertices[keys[i]] = new Vertex<D, K>(keys[i], data[i]);
-    }
-    
-    for (int i = 0; i < keys.size(); i++) {
-        vertices[keys[i]]->adj = edges[i];
-    }
+    for (size_t i = 0; i < keys.size(); i++) {
+    vertices[keys[i]] = new Vertex<D, K>(keys[i], data[i]);
+    vertices[keys[i]]->adj = edges[i];
+}
 }
 
 template <typename D, typename K>
@@ -135,7 +132,7 @@ string Graph<D, K>::edge_class(K u, K v)
     Vertex<D, K>* u_vertex = get(u);
     if (u_vertex == nullptr) return "no edge";
     
-    // Check if edge (u, v) exists
+    // Check if edge exists
     bool edge_exists = false;
     for (K adj_key : u_vertex->adj) {
         if (adj_key == v) {
@@ -145,66 +142,79 @@ string Graph<D, K>::edge_class(K u, K v)
     }
     if (!edge_exists) return "no edge";
     
+    // Find source from last BFS (vertex with distance 0)
+    K source = find_source();
+    if (source != K()) {
+        dfs(source);
+    } else {
+        return "no edge";
+    }
+
+
     Vertex<D, K>* v_vertex = get(v);
-    if (v_vertex == nullptr || v_vertex->distance == -1) {
+    if (v_vertex == nullptr) {
         return "no edge";
     }
     
-    // Tree edge: v's parent is u in BFS tree
+    // Tree edge: v.π = u
     if (v_vertex->pi == u) {
         return "tree edge";
     }
-    // Back edge: edge to ancestor (v was discovered before u)
-    else if (v_vertex->distance < u_vertex->distance) {
+    
+    // Back edge: edge to ancestor (v's interval contains u's interval)
+    if (v_vertex->discovery_time < u_vertex->discovery_time && 
+        u_vertex->finish_time < v_vertex->finish_time) {
         return "back edge";
     }
-    // Forward edge: edge to descendant (v discovered after u, but not direct child)
-    else if (v_vertex->distance > u_vertex->distance) {
+    
+    // Forward edge: edge to descendant (u's interval contains v's interval)
+    if (u_vertex->discovery_time < v_vertex->discovery_time && 
+        v_vertex->finish_time < u_vertex->finish_time) {
         return "forward edge";
     }
-    // Cross edge: same level or other relationships
-    else {
-        return "cross edge";
-    }
+    
+    // Cross edge: everything else
+    return "cross edge";
 }
+
 
 template <typename D, typename K>
 void Graph<D, K>::bfs_tree(K s)
 {
-    bfs(s);
-    
-    // Capture BFS discovery order
-    vector<K> discovery_order;
+    reset_bfs_state();
+    Vertex<D, K> *source = get(s);
+    if (source == nullptr) return;
+
+    source->color = "gray";
+    source->distance = 0;
+
     queue<K> q;
-    map<K, bool> visited;
-    
     q.push(s);
-    visited[s] = true;
     
+    vector<K> discovery_order;  // Track order during BFS
+    map<int, vector<K>> levels;
+
     while (!q.empty()) {
-        K curr = q.front();
+        K u_key = q.front();
         q.pop();
-        discovery_order.push_back(curr);
         
-        Vertex<D, K>* vertex = get(curr);
-        if (vertex != nullptr) {
-            for (K neighbor : vertex->adj) {
-                Vertex<D, K>* nbr = get(neighbor);
-                if (nbr != nullptr && nbr->distance != -1 && !visited[neighbor]) {
-                    visited[neighbor] = true;
-                    q.push(neighbor);
-                }
+        Vertex<D, K> *u = get(u_key);
+        if (u == nullptr) continue;
+        
+        discovery_order.push_back(u_key);
+        levels[u->distance].push_back(u_key);
+        
+        for (auto v_key : u->adj) {
+            Vertex<D, K> *v = get(v_key);
+            if (v == nullptr) continue;
+            if (v->color == "white") {
+                v->color = "gray";
+                v->distance = u->distance + 1;
+                v->pi = u_key;
+                q.push(v_key);
             }
         }
-    }
-    
-    // Group by levels in discovery order
-    map<int, vector<K>> levels;
-    for (K key : discovery_order) {
-        Vertex<D, K>* vertex = get(key);
-        if (vertex != nullptr && vertex->distance != -1) {
-            levels[vertex->distance].push_back(key);
-        }
+        u->color = "black";
     }
     
     // Print levels
@@ -225,7 +235,6 @@ void Graph<D, K>::bfs_tree(K s)
         }
     }
 }
-
 // ========================================
 // Helper Methods
 // ========================================
@@ -239,4 +248,69 @@ void Graph<D, K>::reset_bfs_state()
         pair.second->pi = K();
         pair.second->distance = -1;
     }
+}
+
+template <typename D, typename K>
+void Graph<D, K>::dfs(K source)
+{
+    reset_dfs_state();
+    int time = 0;
+    // Visit ALL vertices, creating a forest if needed
+    for (auto& pair : vertices) {
+        K vertex_key = pair.first;
+        Vertex<D, K>* vertex = pair.second;
+        
+        if (vertex->color == "white") {
+            dfs_visit(vertex_key, time);  // Start new tree
+        }
+    }
+}   
+
+
+template <typename D, typename K>
+void Graph<D, K>::reset_dfs_state()
+{
+    for (auto& pair : vertices)
+    {
+        pair.second->color = "white";
+        pair.second->pi = K();
+        pair.second->discovery_time = -1;
+        pair.second->finish_time = -1;
+    }
+}
+
+template <typename D, typename K>
+void Graph<D, K>::dfs_visit(K u_key, int& time)
+{
+    Vertex<D, K>* u = get(u_key);
+    if (u == nullptr) return;
+    
+    time++;
+    u->discovery_time = time;
+    u->color = "gray";
+    
+    for (K v_key : u->adj) {
+        Vertex<D, K>* v = get(v_key);
+        if (v == nullptr) continue;
+        
+        if (v->color == "white") {
+            v->pi = u_key;
+            dfs_visit(v_key, time);
+        }
+    }
+    
+    u->color = "black";
+    time++;
+    u->finish_time = time;
+}
+
+template <typename D, typename K>
+K Graph<D, K>::find_source()
+{
+    for (auto& pair : vertices) {
+        if (pair.second->distance == 0) {
+            return pair.first;
+        }
+    }
+    return K();  // Default constructed key
 }
