@@ -74,15 +74,17 @@ bool Graph<D, K>::reachable(K u, K v)
 G.bfs(s) should execute the breadth-first search algorithm for the graph G from the source vertex
 corresponding to the key value s.
 */
+
+// Precondition: key s exists in graph G
+// Postcondition: BFS properties of all vertices are updated
+
 template <typename D, typename K>
 void Graph<D, K>::bfs(K s)
 {
     reset_bfs_state();
+
     Vertex<D, K> *source = get(s);
-    if (source == nullptr)
-    {
-        return;
-    }
+    if (source == nullptr) return;
 
     source->color = "gray";
     source->distance = 0;
@@ -96,10 +98,13 @@ void Graph<D, K>::bfs(K s)
         q.pop();
         Vertex<D, K> *u = get(u_key);
         if (u == nullptr) continue; 
-        for (auto v_key : u->adj)
-        {
+
+        for (size_t i = 0; i < u->adj.size(); i++) {
+            K v_key = u->adj[i];
+
             Vertex<D, K> *v = get(v_key);
             if (v == nullptr) continue;
+
             if (v->color == "white")
             {
                 v->color = "gray";
@@ -107,7 +112,6 @@ void Graph<D, K>::bfs(K s)
                 v->pi = u_key;
                 q.push(v_key);
             }
-            
         }
         u->color = "black";
     }
