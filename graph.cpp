@@ -37,10 +37,10 @@ G.get(k) should return a pointer to the vertex corresponding to the key k in the
 template <typename D, typename K>
 Vertex<D, K> *Graph<D, K>::get(K key)
 {
-    // 1) find key on vertices map 
+    // find key on vertices map 
     auto it = vertices.find(key);
 
-    // 2) return pointer to vertex if found, else nullptr
+    // return pointer to vertex if found, else nullptr
     if (it != vertices.end()) // If key was found
     {
         return it->second; // Return its pointer (it->first is the key, it->second is the value)
@@ -58,11 +58,11 @@ Should only print the string "X is reachable from T"
 template <typename D, typename K>
 bool Graph<D, K>::reachable(K u, K v)
 {
-    // 1) Perform BFS from u
+    // Perform BFS from u
     bfs(u);
-    // 2) Check if v was reached
+    // Check if v was reached
     Vertex<D, K>* target = get(v);
-    // 3) Return true if target != nullptr and target->distance != -1, false otherwise
+    // Return true if target != nullptr and target->distance != -1, false otherwise
     if (target != nullptr && target->distance != -1)
     {
         return true;
@@ -81,31 +81,39 @@ corresponding to the key value s.
 template <typename D, typename K>
 void Graph<D, K>::bfs(K s)
 {
+    // Initialize all vertices
     reset_bfs_state();
+
+    // Get source vertex
+    // Source vertex -> color = gray, distance = 0
 
     Vertex<D, K> *source = get(s);
     if (source == nullptr) return;
 
-    source->color = "gray";
+    source->color = "gray"; 
     source->distance = 0;
 
+    // Making a queue and push(s)
     queue<K> q;
     q.push(s);
 
+    // if queue not empty
     while (!q.empty())
     {
-        K u_key = q.front();
-        q.pop();
-        Vertex<D, K> *u = get(u_key);
+        K u_key = q.front(); // Get key of front vertex
+        q.pop(); // Dequeue front vertex
+
+        Vertex<D, K> *u = get(u_key); // Get pointer to vertex
         if (u == nullptr) continue; 
 
-        for (size_t i = 0; i < u->adj.size(); i++) {
-            K v_key = u->adj[i];
+        for (size_t i = 0; i < u->adj.size(); i++) { // For each adjacent vertex
 
-            Vertex<D, K> *v = get(v_key);
+            K v_key = u->adj[i]; // v_key is equal to u->adj[i]
+
+            Vertex<D, K> *v = get(v_key); // By using v_key, we set v pointer to vertex
             if (v == nullptr) continue;
 
-            if (v->color == "white")
+            if (v->color == "white") // we have to change color, distance, and pi and then push to q.
             {
                 v->color = "gray";
                 v->distance = u->distance + 1;
@@ -116,6 +124,15 @@ void Graph<D, K>::bfs(K s)
         u->color = "black";
     }
 }
+
+
+/*
+G.print_path(u, v) should print the shortest path from the vertex corresponding to the key u to the vertex corresponding to the key v in the graph G.
+If there is no path from u to v, the function should not print anything.
+*/
+
+// Precondition: keys u and v exist in graph G
+// Postcondition: prints shortest path from u to v if exists
 
 template <typename D, typename K>
 void Graph<D, K>::print_path(K u, K v)
