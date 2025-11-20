@@ -52,11 +52,17 @@ Vertex<D, K> *Graph<D, K>::get(K key)
 reachable(u, v): G.reachable(u, v) should indicate if the vertex corresponding to the key v is reachable from the vertex corresponding to the key u in the graph G.
 Should only print the string "X is reachable from T"
 */
+// Precondition: keys u and v exist in graph G
+// Postcondition: returns true if v is reachable from u, false otherwise
+
 template <typename D, typename K>
 bool Graph<D, K>::reachable(K u, K v)
 {
+    // 1) Perform BFS from u
     bfs(u);
+    // 2) Check if v was reached
     Vertex<D, K>* target = get(v);
+    // 3) Return true if target != nullptr and target->distance != -1, false otherwise
     if (target != nullptr && target->distance != -1)
     {
         return true;
