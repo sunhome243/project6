@@ -137,15 +137,15 @@ If there is no path from u to v, the function should not print anything.
 template <typename D, typename K>
 void Graph<D, K>::print_path(K u, K v)
 {
-    bfs(u);
+    bfs(u); // Perform BFS from u to set up pi values
     
-    Vertex<D, K>* target = get(v);
+    Vertex<D, K>* target = get(v); // Get target vertex
     if (target == nullptr || target->distance == -1) {
         return;
     }
     
-    vector<K> path;
-    K current = v;
+    vector<K> path; // To store the path
+    K current = v;   // Start from target vertex
     
     while (current != u) {
         path.push_back(current);
@@ -161,6 +161,12 @@ void Graph<D, K>::print_path(K u, K v)
     }
 }
 
+/*
+G.edge_class(u, v) should classify the edge (u, v) in the graph G as one of the following types: "tree edge", "back edge", "forward edge",
+"cross edge", or "no edge".
+*/
+// Precondition: keys u and v exist in graph G
+// Postcondition: returns string representing edge classification
 
 template <typename D, typename K>
 string Graph<D, K>::edge_class(K u, K v)
@@ -213,6 +219,12 @@ string Graph<D, K>::edge_class(K u, K v)
     return "cross edge";
 }
 
+
+/*
+bfs_tree(s): G.bfs_tree(s) should perform a breadth-first search (BFS) traversal of the graph G starting from the source vertex corresponding to the key s and print the vertices level by level.
+*/
+// Precondition: key s exists in graph G
+// Postcondition: prints vertices level by level from source s
 
 template <typename D, typename K>
 void Graph<D, K>::bfs_tree(K s)
