@@ -5,8 +5,7 @@
 // ========================================
 
 template <typename D, typename K>
-Graph<D, K>::Graph()
-{
+Graph<D, K>::Graph() { 
 }
 
 template <typename D, typename K>
@@ -25,16 +24,26 @@ Graph<D, K>::~Graph()
         delete pair.second;
     }
 }
+
+
+
 /*
 G.get(k) should return a pointer to the vertex corresponding to the key k in the graph G
 */
+
+// Precondition: key k exists in graph G
+// Postcondition: returns pointer to vertex with key k
+
 template <typename D, typename K>
 Vertex<D, K> *Graph<D, K>::get(K key)
 {
+    // 1) find key on vertices map 
     auto it = vertices.find(key);
+
+    // 2) return pointer to vertex if found, else nullptr
     if (it != vertices.end()) // If key was found
     {
-        return it->second; // Return its pointer
+        return it->second; // Return its pointer (it->first is the key, it->second is the value)
     }
     return nullptr;
 }

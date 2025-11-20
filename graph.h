@@ -14,8 +14,8 @@ using namespace std;
 template <typename D, typename K>
 struct Vertex
 {
-    K key;
-    D data;
+    K key; // Edge key
+    D data; // Edge data
     vector<K> adj; // Adjacency list (stored as keys)
 
     // BFS properties
@@ -50,14 +50,23 @@ public:
 
     // Required methods
     Vertex<D, K> *get(K key);
+
     bool reachable(K u, K v);
+    
     void bfs(K s);
+    
     void print_path(K u, K v);
+    
     string edge_class(K u, K v);
+    
     void dfs(K source);
+    
     void dfs_visit(K u_key, int &time);
+    
     void reset_dfs_state();
+    
     void bfs_tree(K s);
+    
     K find_source();
 private:
     // Helper methods
