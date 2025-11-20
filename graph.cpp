@@ -257,11 +257,12 @@ void Graph<D, K>::bfs_tree(K s)
 template <typename D, typename K>
 void Graph<D, K>::reset_bfs_state()
 {
-    for (auto& pair : vertices)
+    for (auto it = vertices.begin(); it != vertices.end(); it++)
     {
-        pair.second->color = "white";
-        pair.second->pi = K();
-        pair.second->distance = -1;
+        Vertex<D, K> *v = it->second; 
+        v->color = "white"; 
+        v->distance = -1;  
+        v->pi = K();
     }
 }
 
