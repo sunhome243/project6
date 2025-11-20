@@ -172,6 +172,8 @@ void test_edge_class_custom()
         
         Graph<int, string> *G_Edge = new Graph<int, string>(k, d, e);
         
+        G_Edge->bfs("X");
+
         // Tree Edge (X -> Y) - First visit
         string e_class = G_Edge->edge_class("X", "Y");
         if (e_class != "tree edge")
