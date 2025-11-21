@@ -90,7 +90,6 @@ void Graph<D, K>::bfs(K s)
     Vertex<D, K> *source = get(s);
     if (source == nullptr) return;
 
-    source->color = "gray"; 
     source->distance = 0;
 
     // Making a queue and push(s)
@@ -113,15 +112,14 @@ void Graph<D, K>::bfs(K s)
             Vertex<D, K> *v = get(v_key); // By using v_key, we set v pointer to vertex
             if (v == nullptr) continue;
 
-            if (v->color == "white") // we have to change color, distance, and pi and then push to q.
+            if (v->color) // we have to change color, distance, and pi and then push to q.
             {
-                v->color = "gray";
                 v->distance = u->distance + 1;
                 v->pi = u_key;
                 q.push(v_key);
             }
         }
-        u->color = "black";
+        u->color = false;
     }
 }
 
@@ -233,7 +231,6 @@ void Graph<D, K>::bfs_tree(K s)
     Vertex<D, K> *source = get(s);
     if (source == nullptr) return;
 
-    source->color = "gray";
     source->distance = 0;
 
     queue<K> q;
@@ -255,14 +252,13 @@ void Graph<D, K>::bfs_tree(K s)
         for (auto v_key : u->adj) {
             Vertex<D, K> *v = get(v_key);
             if (v == nullptr) continue;
-            if (v->color == "white") {
-                v->color = "gray";
+            if (v->color) {
                 v->distance = u->distance + 1;
                 v->pi = u_key;
                 q.push(v_key);
             }
         }
-        u->color = "black";
+        u->color = false;
     }
     
     // Print levels
@@ -293,7 +289,7 @@ void Graph<D, K>::reset_bfs_state()
     for (auto it = vertices.begin(); it != vertices.end(); it++)
     {
         Vertex<D, K> *v = it->second; 
-        v->color = "white"; 
+        v->color = true; 
         v->distance = -1;  
         v->pi = K();
     }
@@ -310,7 +306,7 @@ void Graph<D, K>::dfs(K source)
         K vertex_key = pair.first;
         Vertex<D, K>* vertex = pair.second;
         
-        if (vertex->color == "white") {
+        if (vertex->color) {
             dfs_visit(vertex_key, time);  // Start new tree
         }
     }
@@ -322,7 +318,7 @@ void Graph<D, K>::reset_dfs_state()
 {
     for (auto& pair : vertices)
     {
-        pair.second->color = "white";
+        pair.second->color = true;
         pair.second->pi = K();
         pair.second->discovery_time = -1;
         pair.second->finish_time = -1;
@@ -337,19 +333,18 @@ void Graph<D, K>::dfs_visit(K u_key, int& time)
     
     time++;
     u->discovery_time = time;
-    u->color = "gray";
     
     for (K v_key : u->adj) {
         Vertex<D, K>* v = get(v_key);
         if (v == nullptr) continue;
         
-        if (v->color == "white") {
+        if (v->color) {
             v->pi = u_key;
             dfs_visit(v_key, time);
         }
     }
     
-    u->color = "black";
+    u->color = false;
     time++;
     u->finish_time = time;
 }
