@@ -2,11 +2,11 @@ all: test test-example
 
 make: test, test-example
 
-test: test.o graph.o graph_description.txt
+test: test.o graph.o
 	g++ -std=c++2a test.o graph.o -o test
 	./test
 
-test-example: test-example.o graph.o graph_description.txt
+test-example: test-example.o graph.o 
 	g++ -std=c++2a test-example.o graph.o -o test-example
 	./test-example
 

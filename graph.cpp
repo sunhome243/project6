@@ -86,7 +86,7 @@ void Graph<D, K>::bfs(K s)
     if (source == nullptr) return;
 
     source->distance = 0;
-    source->color = false; // Mark source as visited immediately
+    source->visited = true; // Mark source as visited immediately
     queue<K> q;
     q.push(s);
 
@@ -102,9 +102,9 @@ void Graph<D, K>::bfs(K s)
             Vertex<D, K> *v = get(v_key);
             if (v == nullptr) continue;
 
-            if (v->color) // If v is unvisited
+            if (!v->visited) // If v is unvisited
             {
-                v->color = false; // Mark v as visited
+                v->visited = true; // Mark v as visited
                 v->distance = u->distance + 1;
                 v->pi = u_key;
                 q.push(v_key);
@@ -221,7 +221,7 @@ void Graph<D, K>::bfs_tree(K s)
     if (source == nullptr) return;
 
     source->distance = 0;
-    source->color = false; // Mark source as visited immediately
+    source->visited = true; // Mark source as visited immediately
     
     queue<K> q;
     q.push(s);
@@ -239,8 +239,8 @@ void Graph<D, K>::bfs_tree(K s)
             Vertex<D, K> *v = get(v_key);
             if (v == nullptr) continue;
             
-            if (v->color) { // If v is unvisited
-                v->color = false; // Mark v as visited
+            if (!v->visited) { // If v is unvisited
+                v->visited = true; // Mark v as visited
                 v->distance = u->distance + 1;
                 v->pi = u_key;
                 
@@ -278,7 +278,7 @@ void Graph<D, K>::reset_bfs_state()
     for (auto it = vertices.begin(); it != vertices.end(); it++)
     {
         Vertex<D, K> *v = it->second; 
-        v->color = true; 
+        v->visited = false; 
         v->distance = -1;  
         v->pi = K();
     }
@@ -295,7 +295,7 @@ void Graph<D, K>::dfs(K source)
         K vertex_key = pair.first;
         Vertex<D, K>* vertex = pair.second;
         
-        if (vertex->color) {
+        if (!vertex->visited) {
             dfs_visit(vertex_key, time);  // Start new tree
         }
     }
@@ -307,7 +307,7 @@ void Graph<D, K>::reset_dfs_state()
 {
     for (auto& pair : vertices)
     {
-        pair.second->color = true;
+        pair.second->visited = false;
         pair.second->pi = K();
         pair.second->discovery_time = -1;
         pair.second->finish_time = -1;
@@ -320,7 +320,7 @@ void Graph<D, K>::dfs_visit(K u_key, int& time)
     Vertex<D, K>* u = get(u_key);
     if (u == nullptr) return;
     
-    u->color = false;
+    u->visited = true;
 
     time++;
     u->discovery_time = time;
@@ -329,7 +329,7 @@ void Graph<D, K>::dfs_visit(K u_key, int& time)
         Vertex<D, K>* v = get(v_key);
         if (v == nullptr) continue;
         
-        if (v->color) {
+        if (!v->visited) {
             v->pi = u_key;
             dfs_visit(v_key, time);
         }

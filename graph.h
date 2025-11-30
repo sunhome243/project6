@@ -19,7 +19,7 @@ struct Vertex
     vector<K> adj; // Adjacency list (stored as keys)
 
     // BFS properties
-    bool color; // Not Visited?
+    bool visited;  // Not Visited?
     int distance; // Distance from source (-1 represents infinity)
     K pi;         // Predecessor key
 
@@ -27,9 +27,9 @@ struct Vertex
     int discovery_time;  
     int finish_time;
     // Constructor
-    Vertex(K k, D d) : key(k), data(d), color(true), distance(-1), 
+    Vertex(K k, D d) : key(k), data(d), visited(false), distance(-1), 
                        discovery_time(-1), finish_time(-1) {}
-    Vertex() : color(true), distance(-1), discovery_time(-1), finish_time(-1) {}
+    Vertex() : visited(false), distance(-1), discovery_time(-1), finish_time(-1) {}
 };
 
 
