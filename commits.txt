@@ -1,0 +1,94 @@
+Commit: d0d85dd11bec98a07ef823d851f550f61c217755
+Author: phamdop1-bit
+Date:   2025-11-30
+Message: edge class test update
+
+Commit: 414b2e03926cd6ffd848220dddc90aaf2fecf8b0
+Author: phamdop1-bit
+Date:   2025-11-30
+Message: change color to visited
+
+Commit: f094a4a756cc58689f215d441e115ae5996c621a
+Author: Hyowon Cho
+Date:   2025-11-30
+Message: fixed errors
+
+Commit: 55c3ac0dc2461b1aabf973611b99a23d734500fd
+Author: Sunho Kim
+Date:   2025-11-21
+Message: refactor: change vertex color representation from string to boolean
+
+Commit: 18f0bf02af3df688180c65a084d00481b8f7b615
+Author: Hyowon Cho
+Date:   2025-11-20
+Message: second try for test_graph.cpp
+
+Commit: a095f3b4aac41943da8f1c7e2f2b1e6b1b5a7630
+Author: Hyowon Cho
+Date:   2025-11-20
+Message: test_graph.cpp
+
+Commit: dee2ebbadde60cfdcdf12c2d6cdc34824040fc4b
+Author: Hyowon Cho
+Date:   2025-11-20
+Message: fix error
+
+Commit: d0415ecd3761d63f0b5ddb8d843a14b43954bad8
+Author: Hyowon Cho
+Date:   2025-11-20
+Message: fix logical bug on dfs
+
+Commit: f572d093aaf863a2abb525663e9cc1710226d029
+Author: Hyowon Cho
+Date:   2025-11-20
+Message: edge_class and bfs_tree
+
+Commit: c5195036907aba3c918faa2cb548331c0da562ec
+Author: Hyowon Cho
+Date:   2025-11-20
+Message: print_path(u, v)
+
+Commit: 8874e7b511f799268230b1fa00e35989bab4a5a5
+Author: Hyowon Cho
+Date:   2025-11-20
+Message: G.bfs(s)
+
+Commit: d0723fcfb6346bdc5c5c1fb52ca6896f2dde3209
+Author: Hyowon Cho
+Date:   2025-11-20
+Message: reset_bfs_state()
+
+Commit: ea73ddc9cdc539d0b1c548a3ea2431ee4e769457
+Author: Hyowon Cho
+Date:   2025-11-20
+Message: reachable(u, v) description
+
+Commit: 74809c0865227586f07eea0f4d3a60a9bb74b984
+Author: Hyowon Cho
+Date:   2025-11-20
+Message: get code description
+
+Commit: a66433707ef2bf1759a34be06e2c2aa5752f25c4
+Author: phamdop1-bit
+Date:   2025-11-20
+Message: fix all logical bugs
+
+Commit: 15203567f04c025460388159950db838d493dedf
+Author: phamdop1-bit
+Date:   2025-11-18
+Message: better bfs_tree
+
+Commit: 7e48f4b287f030df548ccf12691fa785594ede57
+Author: phamdop1-bit
+Date:   2025-11-18
+Message: updated bfs_tree
+
+Commit: 02ea01cf7b020e97c54f1400c21c2eb63292ac8c
+Author: phamdop1-bit
+Date:   2025-11-18
+Message: fix bugs on h file ,cpp  and did first iteration of edge class, print path and bfs tree
+
+Commit: 8137088b3f3145f58e2e8494d1f05e725c0af309
+Author: Sunho Kim
+Date:   2025-11-17
+Message: first commit
