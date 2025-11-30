@@ -81,48 +81,37 @@ corresponding to the key value s.
 template <typename D, typename K>
 void Graph<D, K>::bfs(K s)
 {
-    // Initialize all vertices
     reset_bfs_state();
-
-    // Get source vertex
-    // Source vertex -> color = gray, distance = 0
-
     Vertex<D, K> *source = get(s);
     if (source == nullptr) return;
 
     source->distance = 0;
-
-    // Making a queue and push(s)
+    source->color = false; // Mark source as visited immediately
     queue<K> q;
     q.push(s);
 
-    // if queue not empty
     while (!q.empty())
     {
-        K u_key = q.front(); // Get key of front vertex
-        q.pop(); // Dequeue front vertex
+        K u_key = q.front();
+        q.pop();
 
-        Vertex<D, K> *u = get(u_key); // Get pointer to vertex
-        if (u == nullptr) continue; 
+        Vertex<D, K> *u = get(u_key);
 
-        for (size_t i = 0; i < u->adj.size(); i++) { // For each adjacent vertex
-
-            K v_key = u->adj[i]; // v_key is equal to u->adj[i]
-
-            Vertex<D, K> *v = get(v_key); // By using v_key, we set v pointer to vertex
+        for (size_t i = 0; i < u->adj.size(); i++) {
+            K v_key = u->adj[i];
+            Vertex<D, K> *v = get(v_key);
             if (v == nullptr) continue;
 
-            if (v->color) // we have to change color, distance, and pi and then push to q.
+            if (v->color) // If v is unvisited
             {
+                v->color = false; // Mark v as visited
                 v->distance = u->distance + 1;
                 v->pi = u_key;
                 q.push(v_key);
             }
         }
-        u->color = false;
     }
 }
-
 
 /*
 G.print_path(u, v) should print the shortest path from the vertex corresponding to the key u to the vertex corresponding to the key v in the graph G.
@@ -232,35 +221,35 @@ void Graph<D, K>::bfs_tree(K s)
     if (source == nullptr) return;
 
     source->distance = 0;
-
+    source->color = false; // Mark source as visited immediately
+    
     queue<K> q;
     q.push(s);
     
-    vector<K> discovery_order;  // Track order during BFS
     map<int, vector<K>> levels;
+    levels[0].push_back(s); 
 
     while (!q.empty()) {
         K u_key = q.front();
         q.pop();
         
         Vertex<D, K> *u = get(u_key);
-        if (u == nullptr) continue;
-        
-        discovery_order.push_back(u_key);
-        levels[u->distance].push_back(u_key);
-        
+
         for (auto v_key : u->adj) {
             Vertex<D, K> *v = get(v_key);
             if (v == nullptr) continue;
-            if (v->color) {
+            
+            if (v->color) { // If v is unvisited
+                v->color = false; // Mark v as visited
                 v->distance = u->distance + 1;
                 v->pi = u_key;
+                
+                levels[v->distance].push_back(v_key); // Add v to its level
                 q.push(v_key);
             }
         }
-        u->color = false;
     }
-    
+
     // Print levels
     int total_levels = levels.size();
     int current_level_index = 0;
@@ -331,6 +320,8 @@ void Graph<D, K>::dfs_visit(K u_key, int& time)
     Vertex<D, K>* u = get(u_key);
     if (u == nullptr) return;
     
+    u->color = false;
+
     time++;
     u->discovery_time = time;
     
@@ -344,7 +335,6 @@ void Graph<D, K>::dfs_visit(K u_key, int& time)
         }
     }
     
-    u->color = false;
     time++;
     u->finish_time = time;
 }
