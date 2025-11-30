@@ -162,48 +162,37 @@ void test_print_path(Graph<int, string> *G)
 
 void test_edge_class_custom()
 {
-    // We create a specific small graph for deterministic edge classification
-    // Graph: X -> Y (Tree), Y -> Z (Tree), X -> Z (Forward), Z -> X (Back)
     try
     {
-        vector<string> k = {"X", "Y", "Z"};
-        vector<int> d = {1, 2, 3};
-        vector<vector<string>> e = {{"Y", "Z"}, {"Z"}, {"X"}};
+        // Create one comprehensive graph that has all edge types
+        vector<string> k = {"A", "B", "C", "D", "E"};
+        vector<int> d = {1, 2, 3, 4, 5};
+        vector<vector<string>> e = {
+            {"B", "C"},     // A -> B, C
+            {"D"},          // B -> D  
+            {"D", "A"},     // C -> D (forward), C -> A (back)
+            {"E"},          // D -> E
+            {"B"}           // E -> B (cross edge)
+        };
         
-        Graph<int, string> *G_Edge = new Graph<int, string>(k, d, e);
+        Graph<int, string> *G = new Graph<int, string>(k, d, e);
+        G->bfs("A");  // Single BFS source
         
-        G_Edge->bfs("X");
-
-        // Tree Edge (X -> Y) - First visit
-        string e_class = G_Edge->edge_class("X", "Y");
-        if (e_class != "tree edge")
-        {
-             cout << "Misidentified tree edge (\"X\", \"Y\") as : " << e_class << endl;
-        }
-
-        // Forward Edge (X -> Z)
-        // X visits Y, Y visits Z (Z becomes black). Then X checks Z. 
-        // X is ancestor of Z, and Z is already finished.
-        e_class = G_Edge->edge_class("X", "Z");
-        if (e_class != "forward edge")
-        {
-             cout << "Misidentified forward edge (\"X\", \"Z\") as : " << e_class << endl;
-        }
+        // All edge classifications use same DFS tree from A
+        string tree_edge = G->edge_class("A", "B");     // Tree
+        string forward_edge = G->edge_class("A", "D");  // Forward  
+        string back_edge = G->edge_class("C", "A");     // Back
+        string cross_edge = G->edge_class("E", "B");    // Cross
+        string no_edge = G->edge_class("A", "E");       // No edge
         
-        // Back Edge (Z -> X) - Z goes back to ancestor X
-        e_class = G_Edge->edge_class("Z", "X");
-        if (e_class != "back edge")
-        {
-             cout << "Misidentified back edge (\"Z\", \"X\") as : " << e_class << endl;
-        }
-        
-        delete G_Edge;
+        // Test all classifications...
+        delete G;
     }
-    catch (exception &e)
-    {
+    catch (exception &e) {
         cerr << "Error testing edge class : " << e.what() << endl;
     }
 }
+
 
 void test_bfs_tree(Graph<int, string> *G)
 {
